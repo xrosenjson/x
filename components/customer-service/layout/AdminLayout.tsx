@@ -4,6 +4,7 @@ import type { Language } from '../config';
 import { AdminDashboard } from '../admin/AdminDashboard';
 import { KnowledgeBaseAdmin } from '../knowledge-base/KnowledgeBaseAdmin';
 import { AnalyticsDashboardAdmin } from '../analytics/AnalyticsDashboardAdmin';
+import { SystemConfig } from '../admin/SystemConfig';
 import { UsersAdmin } from '../admin/UsersAdmin';
 import './styles.css';
 
@@ -27,14 +28,16 @@ const menuItems = {
     { key: '/admin', label: '管理控制台', icon: '⚙️' },
     { key: '/users', label: '用户管理', icon: '👥' },
     { key: '/knowledge', label: '知识库', icon: '📚' },
-    { key: '/analytics', label: '数据分析', icon: '📊' }
+    { key: '/analytics', label: '数据分析', icon: '📊' },
+    { key: '/config', label: '系统配置', icon: '⚙️' }
   ],
   'en-US': [
     { key: '/', label: 'Customer Service', icon: '💬' },
     { key: '/admin', label: 'Admin Console', icon: '⚙️' },
     { key: '/users', label: 'User Management', icon: '👥' },
     { key: '/knowledge', label: 'Knowledge Base', icon: '📚' },
-    { key: '/analytics', label: 'Analytics', icon: '📊' }
+    { key: '/analytics', label: 'Analytics', icon: '📊' },
+    { key: '/config', label: 'System Config', icon: '⚙️' }
   ]
 };
 
@@ -62,6 +65,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         return <KnowledgeBaseAdmin language={language} />;
       case '/analytics':
         return <AnalyticsDashboardAdmin language={language} />;
+      case '/config':
+        return <SystemConfig language={language} />;
       default:
         return children;
     }
