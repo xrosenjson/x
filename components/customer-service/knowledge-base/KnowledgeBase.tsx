@@ -38,8 +38,8 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
         language: language || 'zh-CN',
       };
 
-      const response = await XRequest(`${config.backendUrl}${config.api.knowledge}`, {
-        method: 'POST',
+      const response = await XRequest(`${config.backendUrl}/knowledge`, {
+        method: config.api.knowledge.method,
         headers: {
           'Content-Type': 'application/json',
         },

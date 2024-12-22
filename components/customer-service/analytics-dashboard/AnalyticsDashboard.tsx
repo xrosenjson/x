@@ -49,12 +49,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         language: (language || 'zh-CN') as Language,
       };
 
-      const response = await fetch(`${config.backendUrl}${config.api.analytics}`, {
-        method: 'POST',
+      const response = await fetch(`${config.backendUrl}/analytics`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params),
       });
 
       if (response.ok) {

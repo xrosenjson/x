@@ -36,7 +36,7 @@ export const DialogueEngine: FC<DialogueEngineProps> = ({
     };
 
     return XRequest({
-      baseURL: `${config.backendUrl}${config.api.chat}`,
+      baseURL: `${config.backendUrl}/chat`,
       model,
       dangerouslyApiKey: apiKey,
     }).create<XRequestParams, SSEOutput>(params, {
