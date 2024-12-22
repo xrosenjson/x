@@ -1,0 +1,40 @@
+.users-admin {
+  padding: 24px;
+}
+
+.users-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.users-admin-header h2 {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.users-admin .ant-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.users-admin .ant-modal-content {
+  border-radius: 8px;
+}
+
+.users-admin .ant-form-item-label > label {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+}
+
+.users-admin .ant-btn-link {
+  padding: 4px 8px;
+}
+
+.users-admin .ant-btn-link:not(:last-child) {
+  margin-right: 8px;
+}
