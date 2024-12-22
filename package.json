@@ -49,6 +49,9 @@
     "legacy_dist": "antd-tools run dist",
     "legacy_dist:esbuild": "ESBUILD=true npm run dist",
     "legacy_dist:esbuild-no-dup-check": "ESBUILD=true NO_DUP_CHECK=true npm run dist",
+    "dev:vite": "vite",
+    "build:vite": "vite build",
+    "preview:vite": "vite preview",
     "format": "biome format --write .",
     "prelint": "dumi setup",
     "lint": "npm run version && npm run tsc && npm run lint:script && npm run lint:md && npm run lint:style && npm run lint:changelog",
@@ -136,16 +139,16 @@
     "@types/lodash": "^4.17.7",
     "@types/markdown-it": "^14.1.2",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.10.2",
     "@types/ora": "^3.2.0",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.5",
     "@types/prismjs": "^1.26.4",
     "@types/progress": "^2.0.7",
     "@types/qs": "^6.9.16",
-    "@types/react": "^18.3.5",
+    "@types/react": "^19.0.2",
     "@types/react-copy-to-clipboard": "^5.0.7",
-    "@types/react-dom": "^18.3.0",
+    "@types/react-dom": "^19.0.2",
     "@types/react-highlight-words": "^0.20.0",
     "@types/react-resizable": "^3.0.8",
     "@types/semver": "^7.5.8",
@@ -154,6 +157,7 @@
     "@types/throttle-debounce": "^5.0.2",
     "@types/warning": "^3.0.3",
     "@umijs/fabric": "^4.0.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "adm-zip": "^0.5.16",
     "ali-oss": "^6.21.0",
     "antd": "^5.20.6",
@@ -271,11 +275,7 @@
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
