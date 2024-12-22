@@ -1,3 +1,6 @@
+// Import styles
+import './styles.css';
+
 // Export all modules
 export * from './dialogue-engine/DialogueEngine';
 export * from './knowledge-base/KnowledgeBase';
