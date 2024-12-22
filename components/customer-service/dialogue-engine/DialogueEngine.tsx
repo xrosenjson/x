@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
+import { config } from '../../../src/config';
 import useXAgent from '../../useXAgent';
-// Remove unused imports
 import type { RequestFn } from '../../useXAgent';
 import useXChat from '../../useXChat';
 import type { MessageInfo } from '../../useXChat';
@@ -35,9 +35,8 @@ export const DialogueEngine: FC<DialogueEngineProps> = ({
       model: model || info.model || '',
     };
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://app-qdvfycrs.fly.dev';
     return XRequest({
-      baseURL: backendUrl,
+      baseURL: config.backendUrl,
       model,
       dangerouslyApiKey: apiKey,
     }).create<XRequestParams, SSEOutput>(params, {
