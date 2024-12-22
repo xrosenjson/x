@@ -1,6 +1,6 @@
 import React from 'react';
 import type { MessageInfo } from '../../useXChat';
-import type { XAgentConfig } from '../../useXAgent';
+// Import only necessary types
 import { DialogueEngine } from '../dialogue-engine/DialogueEngine';
 
 interface Channel {
@@ -15,12 +15,7 @@ interface MultiChannelProps {
 }
 
 type MessageHandler = (message: MessageInfo<string>) => void;
-type ChannelMessageHandler = (channelId: string) => MessageHandler;
-
-interface ChannelConfig extends XAgentConfig<string> {
-  channelId: string;
-  channelType: Channel['type'];
-}
+// Use MessageHandler directly in the component
 
 export const MultiChannel: React.FC<MultiChannelProps> = ({
   channels = [],
@@ -39,10 +34,7 @@ export const MultiChannel: React.FC<MultiChannelProps> = ({
       {channels.map((channel) => (
         <div key={channel.id} className="channel-container">
           <h3>{channel.name}</h3>
-          <DialogueEngine
-            onMessage={handleChannelMessage(channel.id)}
-            language="zh-CN"
-          />
+          <DialogueEngine onMessage={handleChannelMessage(channel.id)} language="zh-CN" />
         </div>
       ))}
     </div>

@@ -21,12 +21,14 @@ interface AnalyticsRequestParams extends XRequestParams {
   language: Language;
 }
 
-interface AnalyticsResponse {
-  data: AnalyticsData;
+// Response type for analytics API
+interface ApiResponse<T> {
+  data: T;
   success: boolean;
   error?: string;
 }
 
+// Use ApiResponse<AnalyticsData> directly in fetchAnalytics
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   timeRange = 'day',
@@ -53,10 +55,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         },
         body: JSON.stringify(params),
       });
-      
+
       if (response.ok) {
-        const data: AnalyticsData = await response.json();
-        setAnalytics(data);
+        const result = (await response.json()) as ApiResponse<AnalyticsData>;
+        if (result.success) {
+          setAnalytics(result.data);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);

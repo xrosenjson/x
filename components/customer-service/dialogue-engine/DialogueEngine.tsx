@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import useXAgent from '../../useXAgent';
 // Remove unused imports
-import type { RequestFn, XAgentConfig } from '../../useXAgent';
+import type { RequestFn } from '../../useXAgent';
 import useXChat from '../../useXChat';
 import type { MessageInfo } from '../../useXChat';
 import XRequest from '../../x-request';
@@ -19,12 +19,7 @@ interface DialogueEngineProps {
   model?: string;
 }
 
-type AgentRequestConfig = XAgentConfig<string> & {
-  options?: {
-    locale?: string;
-    [key: string]: any;
-  };
-};
+// Use DialogueEngineProps directly in the component
 
 export const DialogueEngine: FC<DialogueEngineProps> = ({
   apiKey = '',
