@@ -1,6 +1,7 @@
 import React from 'react';
-import XRequest from '../../x-request/x-fetch';
 import type { XRequestParams } from '../../x-request';
+import XRequest from '../../x-request/x-fetch';
+import { config } from '../config';
 
 interface KnowledgeBaseProps {
   category?: string;
@@ -37,7 +38,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
         language: language || 'zh-CN',
       };
 
-      const response = await XRequest('/api/knowledge/search', {
+      const response = await XRequest(`${config.backendUrl}${config.api.knowledge}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

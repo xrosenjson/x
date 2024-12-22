@@ -1,5 +1,6 @@
 import React from 'react';
 import type { XRequestParams } from '../../x-request';
+import { config } from '../config';
 
 interface AnalyticsData {
   totalConversations: number;
@@ -48,7 +49,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         language: (language || 'zh-CN') as Language,
       };
 
-      const response = await fetch('/api/analytics', {
+      const response = await fetch(`${config.backendUrl}${config.api.analytics}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
