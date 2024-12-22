@@ -97,7 +97,7 @@ export default function useXChat<
   const parsedMessages = React.useMemo(() => {
     const list: MessageInfo<ParsedMessage>[] = [];
 
-    messages.forEach((agentMsg) => {
+    messages.forEach((agentMsg: MessageInfo<AgentMessage>) => {
       const rawParsedMsg = parser ? parser(agentMsg.message) : agentMsg.message;
       const bubbleMsgs = toArray(rawParsedMsg as ParsedMessage);
 
@@ -136,7 +136,7 @@ export default function useXChat<
     let loadingMsgId: number | string | null = null;
 
     // Add placeholder message
-    setMessages((ori) => {
+    setMessages((ori: MessageInfo<AgentMessage>[]) => {
       let nextMessages = [...ori, createMessage(message, 'local')];
 
       if (requestPlaceholder) {
@@ -168,15 +168,15 @@ export default function useXChat<
       if (!msg) {
         // Create if not exist
         msg = createMessage(message, status);
-        setMessages((ori) => {
-          const oriWithoutPending = ori.filter((info) => info.id !== loadingMsgId);
+        setMessages((ori: MessageInfo<AgentMessage>[]) => {
+          const oriWithoutPending = ori.filter((info: MessageInfo<AgentMessage>) => info.id !== loadingMsgId);
           return [...oriWithoutPending, msg!];
         });
         updatingMsgId = msg.id;
       } else {
         // Update directly
-        setMessages((ori) => {
-          return ori.map((info) => {
+        setMessages((ori: MessageInfo<AgentMessage>[]) => {
+          return ori.map((info: MessageInfo<AgentMessage>) => {
             if (info.id === updatingMsgId) {
               return {
                 ...info,
@@ -219,14 +219,14 @@ export default function useXChat<
               fallbackMsg = requestFallback;
             }
 
-            setMessages((ori) => [
-              ...ori.filter((info) => info.id !== loadingMsgId && info.id !== updatingMsgId),
+            setMessages((ori: MessageInfo<AgentMessage>[]) => [
+              ...ori.filter((info: MessageInfo<AgentMessage>) => info.id !== loadingMsgId && info.id !== updatingMsgId),
               createMessage(fallbackMsg, 'error'),
             ]);
           } else {
             // Remove directly
-            setMessages((ori) => {
-              return ori.filter((info) => info.id !== loadingMsgId && info.id !== updatingMsgId);
+            setMessages((ori: MessageInfo<AgentMessage>[]) => {
+              return ori.filter((info: MessageInfo<AgentMessage>) => info.id !== loadingMsgId && info.id !== updatingMsgId);
             });
           }
         },
