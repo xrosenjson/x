@@ -35,8 +35,9 @@ export const DialogueEngine: FC<DialogueEngineProps> = ({
       model: model || info.model || '',
     };
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://app-qdvfycrs.fly.dev';
     return XRequest({
-      baseURL: baseURL!,
+      baseURL: backendUrl,
       model,
       dangerouslyApiKey: apiKey,
     }).create<XRequestParams, SSEOutput>(params, {
