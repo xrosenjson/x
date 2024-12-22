@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, message } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, message, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { config } from '../../../src/config';
 
@@ -24,6 +24,7 @@ export const UsersAdmin: React.FC<{ language?: 'zh-CN' | 'en-US' }> = ({
 }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -78,8 +79,10 @@ export const UsersAdmin: React.FC<{ language?: 'zh-CN' | 'en-US' }> = ({
       const data = await response.json();
       setUsers(data);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setError(errorMessage);
       message.error(labels[language].error);
-      console.error('Error fetching users:', error);
+      console.error('Error fetching users:', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -121,13 +124,13 @@ export const UsersAdmin: React.FC<{ language?: 'zh-CN' | 'en-US' }> = ({
       title: labels[language].role,
       dataIndex: 'role',
       key: 'role',
-      render: (role) => labels[language][role],
+      render: (role: User['role']) => labels[language][role.toLowerCase() as keyof typeof labels[typeof language]],
     },
     {
       title: labels[language].status,
       dataIndex: 'status',
       key: 'status',
-      render: (status) => labels[language][status],
+      render: (status: User['status']) => labels[language][status.toLowerCase() as keyof typeof labels[typeof language]],
     },
     {
       title: labels[language].actions,
@@ -154,13 +157,27 @@ export const UsersAdmin: React.FC<{ language?: 'zh-CN' | 'en-US' }> = ({
         </Button>
       </div>
 
-      <Table
-        loading={loading}
-        columns={columns}
-        dataSource={users}
-        rowKey="id"
-        pagination={{ pageSize: 10 }}
-      />
+      {loading && (
+        <div className="loading-overlay">
+          <Spin size="large" />
+        </div>
+      )}
+      {error ? (
+        <div className="error-state">
+          <h3>{language === 'zh-CN' ? '获取用户数据失败' : 'Failed to fetch users'}</h3>
+          <p>{error}</p>
+          <Button type="primary" onClick={fetchUsers}>
+            {language === 'zh-CN' ? '重试' : 'Retry'}
+          </Button>
+        </div>
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+        />
+      )}
 
 
       <Modal

@@ -80,7 +80,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
       </Header>
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        <Sider
+          width={200}
+          className="site-layout-background"
+          breakpoint="lg"
+          collapsedWidth={0}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }}
+        >
           <Menu
             mode="inline"
             selectedKeys={[currentPath]}
@@ -91,7 +99,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             }))}
           />
         </Sider>
-        <Layout style={{ padding: '24px' }}>
+        <Layout>
           <Content className="site-layout-background">
             {renderContent()}
           </Content>

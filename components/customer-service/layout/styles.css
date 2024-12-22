@@ -1,33 +1,84 @@
 .admin-layout {
   min-height: 100vh;
+  background: #f0f2f5;
 }
 
 .admin-layout .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 24px;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 64px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .admin-layout .logo {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 600;
   color: #1890ff;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-layout .logo:hover {
   color: #40a9ff;
+  transform: scale(1.02);
 }
 
 .admin-layout .site-layout-background {
   background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin: 24px;
+  padding: 24px;
+  min-height: calc(100vh - 112px);
 }
 
 .admin-layout .ant-layout-sider {
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+  position: fixed;
+  height: calc(100vh - 64px);
+  top: 64px;
+  left: 0;
+  z-index: 999;
+}
+
+.admin-layout .ant-layout-content {
+  margin-left: 200px;
+  margin-top: 64px;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+@media screen and (max-width: 768px) {
+  .admin-layout .header {
+    padding: 0 16px;
+  }
+
+  .admin-layout .site-layout-background {
+    margin: 16px;
+    padding: 16px;
+  }
+
+  .admin-layout .ant-layout-sider {
+    transform: translateX(-100%);
+  }
+
+  .admin-layout .ant-layout-sider.ant-layout-sider-collapsed {
+    transform: translateX(0);
+  }
+
+  .admin-layout .ant-layout-content {
+    margin-left: 0;
+  }
 }
 
 .platform-content {

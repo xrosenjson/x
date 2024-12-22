@@ -1,5 +1,6 @@
 .users-admin {
   padding: 24px;
+  position: relative;
 }
 
 .users-admin-header {
@@ -12,23 +13,34 @@
 .users-admin-header h2 {
   margin: 0;
   color: rgba(0, 0, 0, 0.85);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 20px;
+  line-height: 1.4;
 }
 
 .users-admin .ant-table {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.users-admin .ant-table:hover {
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08);
 }
 
 .users-admin .ant-modal-content {
   border-radius: 8px;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08);
 }
 
 .users-admin .ant-form-item-label > label {
   color: rgba(0, 0, 0, 0.85);
   font-weight: 500;
+}
+
+.users-admin .ant-btn {
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 .users-admin .ant-btn-link {
@@ -37,6 +49,39 @@
 
 .users-admin .ant-btn-link:not(:last-child) {
   margin-right: 8px;
+}
+
+.users-admin .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.users-admin .error-state {
+  text-align: center;
+  padding: 48px 32px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.users-admin .error-state h3 {
+  color: #ff4d4f;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.users-admin .error-state p {
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 16px;
 }
 
 .system-config {
