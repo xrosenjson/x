@@ -1,5 +1,4 @@
 import React from 'react';
-import type { XRequestParams } from '../../x-request';
 import { config } from '../config';
 
 interface AnalyticsData {
@@ -17,19 +16,19 @@ interface AnalyticsDashboardProps {
 type TimeRange = 'day' | 'week' | 'month';
 type Language = 'zh-CN' | 'en-US';
 
-interface AnalyticsRequestParams extends XRequestParams {
+// Query parameters interface
+interface AnalyticsQueryParams {
   timeRange: TimeRange;
   language: Language;
 }
 
-// Response type for analytics API
-interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  error?: string;
+// Analytics response interface matches backend model
+interface AnalyticsResponse {
+  total_conversations: number;
+  average_response_time: number;
+  satisfaction_rate: number;
+  channel_distribution: Record<string, number>;
 }
-
-// Use ApiResponse<AnalyticsData> directly in fetchAnalytics
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   timeRange = 'day',
@@ -44,12 +43,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
   const fetchAnalytics = async (): Promise<void> => {
     try {
-      const params: AnalyticsRequestParams = {
+      const queryParams = new URLSearchParams({
         timeRange: (timeRange || 'day') as TimeRange,
         language: (language || 'zh-CN') as Language,
-      };
+      }).toString();
 
-      const response = await fetch(`${config.backendUrl}/analytics`, {
+      const response = await fetch(`${config.backendUrl}/analytics?${queryParams}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -57,10 +56,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       });
 
       if (response.ok) {
-        const result = (await response.json()) as ApiResponse<AnalyticsData>;
-        if (result.success) {
-          setAnalytics(result.data);
-        }
+        const data = (await response.json()) as AnalyticsResponse;
+        setAnalytics({
+          totalConversations: data.total_conversations,
+          averageResponseTime: data.average_response_time,
+          satisfactionRate: data.satisfaction_rate * 100,
+          activeUsers: data.channel_distribution?.web || 0,
+        });
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -69,7 +71,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
   React.useEffect(() => {
     fetchAnalytics();
-  }, [timeRange]);
+    const interval = setInterval(fetchAnalytics, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
+  }, [timeRange, language, fetchAnalytics]);
 
   return (
     <div className="analytics-dashboard">

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { XRequestParams } from '../../x-request';
+import type { XRequestParams } from '../../x-request/types';
 import XRequest from '../../x-request/x-fetch';
 import { config } from '../config';
 
@@ -10,15 +10,17 @@ interface KnowledgeBaseProps {
 }
 
 interface KnowledgeItem {
-  id: string;
-  title: string;
-  content: string;
+  question: string;
+  answer: string;
+  category: string;
+  language: 'zh-CN' | 'en-US';
 }
 
 type KnowledgeList = KnowledgeItem[];
 
 interface SearchRequestParams extends XRequestParams {
-  query: string;
+  question: string;
+  answer?: string;
   category?: string;
   language: 'zh-CN' | 'en-US';
 }
@@ -33,17 +35,22 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
   const searchKnowledge = async (query: string): Promise<void> => {
     try {
       const params: SearchRequestParams = {
-        query,
-        category,
+        question: query,
+        answer: '', // Required by model but not needed for search
+        category: category || 'general',
         language: language || 'zh-CN',
       };
 
-      const response = await XRequest(`${config.backendUrl}/knowledge`, {
-        method: config.api.knowledge.method,
+      const queryParams = new URLSearchParams({
+        language: params.language,
+        category: params.category || '',
+      }).toString();
+
+      const response = await XRequest(`${config.backendUrl}/knowledge?${queryParams}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params),
       });
 
       if (response.ok) {
@@ -65,10 +72,10 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
   return (
     <div className="knowledge-base">
       <div className="knowledge-list">
-        {knowledge.map((item: { id: string; title: string; content: string }) => (
-          <div key={item.id} className="knowledge-item">
-            <h3>{item.title}</h3>
-            <p>{item.content}</p>
+        {knowledge.map((item: KnowledgeItem) => (
+          <div key={`${item.category}-${item.question}`} className="knowledge-item">
+            <h3>{item.question}</h3>
+            <p>{item.answer}</p>
           </div>
         ))}
       </div>

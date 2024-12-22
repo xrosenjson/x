@@ -27,6 +27,12 @@
     "stripInternal": true,
     "resolvePackageJsonExports": true
   },
-  "include": [".dumirc.ts", "**/*", "src/env.d.ts"],
+  "include": [
+    ".dumirc.ts",
+    "**/*",
+    "src/env.d.ts",
+    "src/types/global.d.ts",
+    "src/types/react.d.ts"
+  ],
   "exclude": ["node_modules", "lib", "es"]
 }

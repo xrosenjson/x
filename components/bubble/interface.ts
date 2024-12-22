@@ -34,4 +34,5 @@ export interface BubbleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
   onTypingComplete?: VoidFunction;
   header?: React.ReactNode;
   footer?: React.ReactNode;
+  role?: 'user' | 'assistant';
 }

@@ -50,22 +50,11 @@ interface XRequestMessage extends AnyObject {
  * Compatible with the parameters of OpenAI's chat.completions.create,
  * with plans to support more parameters and adapters in the future
  */
-export interface XRequestParams {
-  /**
-   * @description Model name, e.g., 'gpt-3.5-turbo'
-   * @default XRequestOptions.model
-   */
-  model?: string;
+export type { XRequestParams } from './types';
 
-  /**
-   * @description Indicates whether to use streaming for the response
-   */
-  stream?: boolean;
-
-  /**
-   * @description The messages to be sent to the model
-   */
-  messages?: XRequestMessage[];
+export interface XRequestMessage {
+  role?: string;
+  content?: XRequestMessageContent;
 }
 
 export interface XRequestCallbacks<Output> {

@@ -1,13 +1,13 @@
 import React from 'react';
-import { DialogueEngine } from './dialogue-engine/DialogueEngine';
-import { KnowledgeBase } from './knowledge-base/KnowledgeBase';
-import { MultiChannel } from './multi-channel/MultiChannel';
-import { AnalyticsDashboard } from './analytics-dashboard/AnalyticsDashboard';
 import type { MessageInfo } from '../useXChat';
+import { AnalyticsDashboard } from './analytics-dashboard/AnalyticsDashboard';
+import { DialogueEngine } from './dialogue-engine/DialogueEngine';
 import type { CommonProps } from './index';
+import { KnowledgeBase } from './knowledge-base/KnowledgeBase';
+import { AdminLayout } from './layout/AdminLayout';
+import { MultiChannel } from './multi-channel/MultiChannel';
 
 interface AICustomerServicePlatformProps extends CommonProps {
-  companyName?: string;
   channels?: Array<{
     id: string;
     name: string;
@@ -18,7 +18,6 @@ interface AICustomerServicePlatformProps extends CommonProps {
 export const AICustomerServicePlatform: React.FC<AICustomerServicePlatformProps> = ({
   language = 'zh-CN',
   apiKey,
-  companyName,
   channels = [],
   baseURL,
   model,
@@ -38,43 +37,32 @@ export const AICustomerServicePlatform: React.FC<AICustomerServicePlatformProps>
   };
 
   return (
-    <div className="ai-customer-service-platform">
-      <div className="platform-header">
-        <h1>{companyName || '智能客服平台'}</h1>
-      </div>
-      
-      <div className="platform-content">
-        <div className="left-panel">
-          <MultiChannel 
-            channels={channels}
-            onMessageReceived={handleChannelMessage}
-          />
+    <AdminLayout language={language}>
+      <div className="ai-customer-service-platform">
+        <div className="platform-content">
+          <div className="left-panel">
+            <MultiChannel channels={channels} onMessageReceived={handleChannelMessage} />
+          </div>
+
+          <div className="main-panel">
+            <DialogueEngine
+              apiKey={apiKey}
+              language={language}
+              onMessage={handleMessage}
+              baseURL={baseURL}
+              model={model}
+            />
+          </div>
+
+          <div className="right-panel">
+            <KnowledgeBase language={language} searchQuery={currentQuery} />
+          </div>
         </div>
-        
-        <div className="main-panel">
-          <DialogueEngine
-            apiKey={apiKey}
-            language={language}
-            onMessage={handleMessage}
-            baseURL={baseURL}
-            model={model}
-          />
-        </div>
-        
-        <div className="right-panel">
-          <KnowledgeBase
-            language={language}
-            searchQuery={currentQuery}
-          />
+
+        <div className="platform-footer">
+          <AnalyticsDashboard language={language} timeRange="day" />
         </div>
       </div>
-      
-      <div className="platform-footer">
-        <AnalyticsDashboard
-          language={language}
-          timeRange="day"
-        />
-      </div>
-    </div>
+    </AdminLayout>
   );
 };
