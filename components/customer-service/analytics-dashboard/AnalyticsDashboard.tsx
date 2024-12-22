@@ -1,4 +1,5 @@
 import React from 'react';
+import type { XRequestParams } from '../../x-request';
 
 interface AnalyticsData {
   totalConversations: number;
@@ -8,8 +9,22 @@ interface AnalyticsData {
 }
 
 interface AnalyticsDashboardProps {
-  timeRange?: 'day' | 'week' | 'month';
-  language?: 'zh-CN' | 'en-US';
+  timeRange?: TimeRange;
+  language?: Language;
+}
+
+type TimeRange = 'day' | 'week' | 'month';
+type Language = 'zh-CN' | 'en-US';
+
+interface AnalyticsRequestParams extends XRequestParams {
+  timeRange: TimeRange;
+  language: Language;
+}
+
+interface AnalyticsResponse {
+  data: AnalyticsData;
+  success: boolean;
+  error?: string;
 }
 
 
@@ -26,13 +41,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
   const fetchAnalytics = async (): Promise<void> => {
     try {
-      // Simulated API call - replace with actual implementation
+      const params: AnalyticsRequestParams = {
+        timeRange: (timeRange || 'day') as TimeRange,
+        language: (language || 'zh-CN') as Language,
+      };
+
       const response = await fetch('/api/analytics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ timeRange, language }),
+        body: JSON.stringify(params),
       });
       
       if (response.ok) {

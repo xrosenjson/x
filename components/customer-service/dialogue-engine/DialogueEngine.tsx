@@ -2,7 +2,10 @@ import React from 'react';
 import useXAgent from '../../useXAgent';
 import useXChat from '../../useXChat';
 import type { MessageInfo } from '../../useXChat';
+import type { XAgentConfig, RequestFn } from '../../useXAgent';
 import XRequest from '../../x-request';
+import type { XRequestParams } from '../../x-request';
+import type { SSEOutput } from '../../x-stream';
 
 import Bubble from '../../bubble';
 import Sender from '../../sender';
@@ -10,37 +13,57 @@ import Sender from '../../sender';
 interface DialogueEngineProps {
   apiKey?: string;
   onMessage?: (message: MessageInfo<string>) => void;
-  language?: 'zh-CN' | 'en-US';
+
   baseURL?: string;
   model?: string;
 }
 
+type AgentRequestConfig = XAgentConfig<string> & {
+  options?: {
+    locale?: string;
+    [key: string]: any;
+  };
+};
+
 export const DialogueEngine: React.FC<DialogueEngineProps> = ({
   apiKey = '',
   onMessage,
-  language = 'zh-CN',
+
   baseURL = '',
   model = '',
 }: DialogueEngineProps) => {
+  const request: RequestFn<string> = (info, callbacks) => {
+    const params: XRequestParams = {
+      messages: (info.messages || []).map(msg => ({ role: 'user', content: msg })),
+      stream: true,
+      model: model || info.model || '',
+    };
+
+    return XRequest({
+      baseURL: baseURL!,
+      model,
+      dangerouslyApiKey: apiKey
+    }).create<XRequestParams, SSEOutput>(params, {
+      onUpdate: (chunk) => {
+        if (chunk.data?.content) {
+          callbacks.onUpdate(chunk.data.content as string);
+        }
+      },
+      onSuccess: (chunks) => {
+        const lastChunk = chunks[chunks.length - 1];
+        if (lastChunk.data?.content) {
+          callbacks.onSuccess(lastChunk.data.content as string);
+        }
+      },
+      onError: callbacks.onError
+    });
+  };
+
   const agent = useXAgent<string>({
     baseURL,
     model,
     dangerouslyApiKey: apiKey,
-    request: (info, callbacks) => {
-      // Include language in the request parameters
-      const params = {
-        ...info,
-        options: {
-          ...info.options,
-          locale: language
-        }
-      };
-      return XRequest({
-        baseURL: baseURL!,
-        model,
-        dangerouslyApiKey: apiKey
-      }).create(params, callbacks);
-    }
+    request
   });
 
   const { onRequest, messages } = useXChat<string>({

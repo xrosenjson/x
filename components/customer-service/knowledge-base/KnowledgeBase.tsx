@@ -1,5 +1,6 @@
 import React from 'react';
 import XRequest from '../../x-request/x-fetch';
+import type { XRequestParams } from '../../x-request';
 
 interface KnowledgeBaseProps {
   category?: string;
@@ -7,33 +8,45 @@ interface KnowledgeBaseProps {
   language?: 'zh-CN' | 'en-US';
 }
 
+interface KnowledgeItem {
+  id: string;
+  title: string;
+  content: string;
+}
+
+type KnowledgeList = KnowledgeItem[];
+
+interface SearchRequestParams extends XRequestParams {
+  query: string;
+  category?: string;
+  language: 'zh-CN' | 'en-US';
+}
+
 export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
   category = '',
   searchQuery = '',
   language = 'zh-CN',
 }: KnowledgeBaseProps) => {
-  const [knowledge, setKnowledge] = React.useState<Array<{
-    id: string;
-    title: string;
-    content: string;
-  }>>([]);
+  const [knowledge, setKnowledge] = React.useState<KnowledgeList>([]);
 
   const searchKnowledge = async (query: string): Promise<void> => {
     try {
+      const params: SearchRequestParams = {
+        query,
+        category,
+        language: language || 'zh-CN',
+      };
+
       const response = await XRequest('/api/knowledge/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          query,
-          category,
-          language,
-        }),
+        body: JSON.stringify(params),
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: KnowledgeList = await response.json();
         setKnowledge(data);
       }
     } catch (error) {
