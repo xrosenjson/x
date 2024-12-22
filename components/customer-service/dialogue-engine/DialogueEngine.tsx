@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 import useXAgent from '../../useXAgent';
+// Remove unused imports
+import type { RequestFn, XAgentConfig } from '../../useXAgent';
 import useXChat from '../../useXChat';
 import type { MessageInfo } from '../../useXChat';
-import type { XAgentConfig, RequestFn } from '../../useXAgent';
 import XRequest from '../../x-request';
 import type { XRequestParams } from '../../x-request';
 import type { SSEOutput } from '../../x-stream';
@@ -13,7 +14,7 @@ import Sender from '../../sender';
 interface DialogueEngineProps {
   apiKey?: string;
   onMessage?: (message: MessageInfo<string>) => void;
-
+  language?: 'zh-CN' | 'en-US';
   baseURL?: string;
   model?: string;
 }
@@ -25,7 +26,7 @@ type AgentRequestConfig = XAgentConfig<string> & {
   };
 };
 
-export const DialogueEngine: React.FC<DialogueEngineProps> = ({
+export const DialogueEngine: FC<DialogueEngineProps> = ({
   apiKey = '',
   onMessage,
 
@@ -34,7 +35,7 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
 }: DialogueEngineProps) => {
   const request: RequestFn<string> = (info, callbacks) => {
     const params: XRequestParams = {
-      messages: (info.messages || []).map(msg => ({ role: 'user', content: msg })),
+      messages: (info.messages || []).map((msg) => ({ role: 'user', content: msg })),
       stream: true,
       model: model || info.model || '',
     };
@@ -42,7 +43,7 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
     return XRequest({
       baseURL: baseURL!,
       model,
-      dangerouslyApiKey: apiKey
+      dangerouslyApiKey: apiKey,
     }).create<XRequestParams, SSEOutput>(params, {
       onUpdate: (chunk) => {
         if (chunk.data?.content) {
@@ -55,7 +56,7 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
           callbacks.onSuccess(lastChunk.data.content as string);
         }
       },
-      onError: callbacks.onError
+      onError: callbacks.onError,
     });
   };
 
@@ -63,7 +64,7 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
     baseURL,
     model,
     dangerouslyApiKey: apiKey,
-    request
+    request,
   });
 
   const { onRequest, messages } = useXChat<string>({
@@ -77,7 +78,7 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
       onMessage({
         id: Date.now().toString(),
         message: content,
-        status: 'local'
+        status: 'local',
       });
     }
   };
@@ -85,17 +86,10 @@ export const DialogueEngine: React.FC<DialogueEngineProps> = ({
   return (
     <div className="dialogue-engine">
       {messages.map((msg: MessageInfo<string>, index: number) => (
-        <Bubble
-          key={index}
-          message={msg}
-          typing={false}
-        />
+        <Bubble key={index} content={msg.message} typing={false} />
       ))}
-      
-      <Sender
-        onSend={handleSend}
-        disabled={!agent}
-      />
+
+      <Sender onSubmit={handleSend} disabled={!agent} prefixCls="x-sender" submitType="enter" />
     </div>
   );
 };

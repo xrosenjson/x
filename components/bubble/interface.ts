@@ -1,4 +1,7 @@
-import type { AvatarProps } from 'antd';
+import React from 'react';
+// Will be imported once @types/antd is installed
+type AvatarProps = any;
+import type { MessageInfo } from '../useXChat';
 
 export interface TypingOption {
   /**
@@ -14,6 +17,7 @@ export interface TypingOption {
 type SemanticType = 'avatar' | 'content' | 'header' | 'footer';
 
 export interface BubbleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'content'> {
+  message?: MessageInfo<string>;
   prefixCls?: string;
   rootClassName?: string;
   styles?: Partial<Record<SemanticType, React.CSSProperties>>;
