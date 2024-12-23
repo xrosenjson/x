@@ -3,6 +3,7 @@ import { Card, DatePicker, Select, Row, Col, Statistic, Space, Spin, Typography 
 import type { RangePickerProps } from 'antd/es/date-picker';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { Dayjs } from 'dayjs';
+import './styles.css';
 import {
   AnalyticsResponse,
   DashboardFilters,
@@ -81,14 +82,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   };
 
   return (
-    <div className={className}>
+    <div className={`analytics-dashboard ${className || ''}`}>
       <Spin spinning={loading}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           {/* Title and Filters */}
-          <Card>
+          <Card className="analytics-card">
             <Space direction="vertical" style={{ width: '100%' }}>
-              <Title level={4}>数据分析面板</Title>
-              <Space wrap style={{ marginBottom: 24 }}>
+              <Title level={4} className="analytics-title">数据分析面板</Title>
+              <Space wrap className="filter-section">
                 <RangePicker
                   onChange={handleDateRangeChange}
                   placeholder={['开始日期', '结束日期']}
@@ -119,7 +120,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </Space>
 
             {/* Summary Statistics */}
-            <Row gutter={[24, 24]}>
+            <Row gutter={[24, 24]} className="stats-grid">
               <Col xs={24} sm={12} lg={6}>
                 <Statistic
                   title="总对话数"
@@ -156,7 +157,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </Card>
 
           {/* Conversation Trends */}
-          <Card title="对话趋势分析">
+          <Card title="对话趋势分析" className="analytics-card chart-container">
             <ResponsiveContainer width="100%" height={400}>
               <LineChart
                 data={data?.timeSeriesData || []}
@@ -206,11 +207,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </Card>
 
           {/* Channel Distribution */}
-          <Card title="渠道分布分析">
-            <Row gutter={[24, 24]}>
+          <Card title="渠道分布分析" className="analytics-card">
+            <Row gutter={[24, 24]} className="channel-grid">
               {data?.channelDistribution && Object.entries(data.channelDistribution).map(([channel, stats]) => (
                 <Col xs={24} sm={12} lg={8} key={channel}>
-                  <Card>
+                  <Card className="channel-card">
                     <Statistic
                       title={formatChannelName(channel)}
                       value={stats.conversations}
@@ -231,11 +232,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </Card>
 
           {/* Common Queries Analysis */}
-          <Card title="常见问题分析">
-            <Row gutter={[24, 24]}>
+          <Card title="常见问题分析" className="analytics-card">
+            <Row gutter={[24, 24]} className="queries-grid">
               {data?.commonQueries.slice(0, 6).map((item, index) => (
                 <Col xs={24} sm={12} lg={8} key={index}>
-                  <Card size="small">
+                  <Card size="small" className="query-card">
                     <Space direction="vertical">
                       <Typography.Text strong>{item.query}</Typography.Text>
                       <Typography.Text type="secondary">
