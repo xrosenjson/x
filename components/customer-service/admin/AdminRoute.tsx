@@ -2,6 +2,7 @@ import { Spin } from 'antd';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import type { Language } from '../config';
+import { messages } from '../config';
 import { useAuth } from '../hooks/useAuth';
 
 interface AdminRouteProps {
@@ -9,28 +10,7 @@ interface AdminRouteProps {
   language?: Language;
 }
 
-const messages: Record<
-  Language,
-  {
-    loading: string;
-    accessDenied: string;
-    notAuthenticated: string;
-    notAuthorized: string;
-  }
-> = {
-  'zh-CN': {
-    loading: '加载中...',
-    accessDenied: '访问被拒绝',
-    notAuthenticated: '请先登录',
-    notAuthorized: '您没有权限访问此页面',
-  },
-  'en-US': {
-    loading: 'Loading...',
-    accessDenied: 'Access Denied',
-    notAuthenticated: 'Please log in first',
-    notAuthorized: 'You are not authorized to access this page',
-  },
-};
+// Using centralized messages from config
 
 export const AdminRoute: React.FC<AdminRouteProps> = ({ children, language = 'zh-CN' }) => {
   const { user, loading, error } = useAuth(language);
@@ -38,7 +18,16 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children, language = 'zh
 
   if (loading) {
     return (
-      <div className="admin-loading">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
         <Spin size="large" />
         <p>{t.loading}</p>
       </div>
@@ -51,7 +40,7 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children, language = 'zh
         to="/login"
         replace
         state={{
-          message: t.notAuthenticated,
+          message: t.sessionExpired,
           from: window.location.pathname,
         }}
       />
@@ -60,9 +49,18 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children, language = 'zh
 
   if (user.role !== 'admin') {
     return (
-      <div className="admin-error">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
         <h2>{t.accessDenied}</h2>
-        <p>{t.notAuthorized}</p>
+        <p>{t.unauthorized}</p>
       </div>
     );
   }

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Language } from '../config';
-import { config } from '../config';
+import { config, messages as configMessages } from '../config';
 
 interface User {
   id: string;
@@ -21,16 +21,16 @@ interface AuthMessages {
   networkError: string;
 }
 
-const messages: Record<Language, AuthMessages> = {
+const authMessages: Record<Language, AuthMessages> = {
   'zh-CN': {
     loginFailed: '登录失败',
     authFailed: '认证失败',
-    networkError: '网络错误',
+    networkError: configMessages['zh-CN'].networkError,
   },
   'en-US': {
     loginFailed: 'Login failed',
     authFailed: 'Authentication failed',
-    networkError: 'Network error',
+    networkError: configMessages['en-US'].networkError,
   },
 };
 
@@ -41,7 +41,7 @@ export const useAuth = (language: Language = 'zh-CN') => {
     error: null,
   });
 
-  const t = messages[language];
+  const t = authMessages[language];
 
   const checkAuth = async () => {
     try {
