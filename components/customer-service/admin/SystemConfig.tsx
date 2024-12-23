@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Card, Form, Select, Switch, Button, message, Space } from 'antd';
+import { Card, Form, Select, Switch, Button, Space } from 'antd';
 import type { SelectValue } from 'antd/es/select';
 
 import { SystemConfigData, fetchSystemConfig, saveSystemConfig } from './api';
@@ -21,7 +21,14 @@ const defaultConfig: SystemConfigState = {
   enableKnowledgeBase: true,
   enableAnalytics: true,
   aiModel: 'gpt-4',
-  responseLanguage: 'auto'
+  responseLanguage: 'auto',
+  channels: {
+    web: { enabled: true, config: {} },
+    mobile: { enabled: true, config: {} },
+    wechat: { enabled: false, config: {} },
+    workWechat: { enabled: false, config: {} },
+    dingtalk: { enabled: false, config: {} }
+  }
 };
 
 export const SystemConfig: React.FC = () => {
@@ -32,7 +39,17 @@ export const SystemConfig: React.FC = () => {
     try {
       setLoading(true);
       const data = await fetchSystemConfig();
-      setConfig(data);
+      // Ensure data includes required channels property
+      setConfig({
+        ...data,
+        channels: data.channels || {
+          web: { enabled: true, config: {} },
+          mobile: { enabled: true, config: {} },
+          wechat: { enabled: false, config: {} },
+          workWechat: { enabled: false, config: {} },
+          dingtalk: { enabled: false, config: {} }
+        }
+      });
     } catch (error) {
       console.error('Failed to load config:', error);
     } finally {

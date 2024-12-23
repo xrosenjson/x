@@ -97,14 +97,14 @@ export const AnalyticsDashboardAdmin: React.FC<AnalyticsDashboardAdminProps> = (
         onSuccess: (chunks: AnalyticsResponse[]) => {
           const [data] = chunks;
           setAnalyticsData({
-            conversations: data.total_conversations || 0,
-            avgDuration: data.average_duration || 0,
-            responseTime: data.response_time || 0,
-            resolutionRate: data.resolution_rate || 0,
-            satisfaction: data.satisfaction_rate || 0,
-            recommendation: data.recommendation_rate || 0,
-            weeklyGrowth: data.weekly_growth || 0,
-            monthlyGrowth: data.monthly_growth || 0,
+            conversations: data.totalConversations || 0,
+            avgDuration: data.averageDuration || 0,
+            responseTime: data.responseTime || 0,
+            resolutionRate: data.satisfactionRate || 0,
+            satisfaction: data.satisfactionRate || 0,
+            recommendation: data.satisfactionRate || 0,
+            weeklyGrowth: data.timeSeriesData?.[6]?.conversations || 0,
+            monthlyGrowth: data.timeSeriesData?.[29]?.conversations || 0,
           });
         },
         onError: (error: Error) => {

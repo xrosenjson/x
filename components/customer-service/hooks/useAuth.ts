@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Language } from '../config';
 import { config, messages as configMessages } from '../config';
 
