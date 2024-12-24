@@ -22,14 +22,16 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        email: str = payload.get("sub")
-        if email is None:
+        username: str = payload.get("sub")
+        if username is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
+        token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
     
-    result = await db.execute(User.__table__.select().where(User.email == token_data.email))
+    from sqlalchemy import select
+    query = select(User).where(User.username == token_data.username)
+    result = await db.execute(query)
     user = result.scalar_one_or_none()
     
     if user is None:
