@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware
 from collections import defaultdict
 import time
@@ -66,3 +66,7 @@ class RateLimiter(BaseHTTPMiddleware):
         # Process the request
         response = await call_next(request)
         return response
+
+# Create a dummy FastAPI app for the rate limiter instance
+_app = FastAPI()
+rate_limit = RateLimiter(_app)
