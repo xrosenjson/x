@@ -44,45 +44,7 @@ class Membership(Base):
     
     user = relationship("User", back_populates="membership")
 
-class MagnetLink(Base):
-    __tablename__ = "magnet_links"
 
-    id = Column(Integer, primary_key=True, index=True)
-    hash = Column(String, unique=True, index=True)
-    title = Column(String)
-    size = Column(Integer)  # in bytes
-    created_at = Column(DateTime, default=datetime.utcnow)
-    category = Column(String)
-    magnet_metadata = Column(JSON)
-
-    downloads = relationship("Download", back_populates="magnet")
-    favorites = relationship("Favorite", back_populates="magnet")
-
-class Download(Base):
-    __tablename__ = "downloads"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    magnet_id = Column(Integer, ForeignKey("magnet_links.id"))
-    status = Column(String)  # QUEUED, DOWNLOADING, COMPLETED, FAILED
-    progress = Column(Float, default=0)
-    local_path = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    user = relationship("User", back_populates="downloads")
-    magnet = relationship("MagnetLink", back_populates="downloads")
-
-class Favorite(Base):
-    __tablename__ = "favorites"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    magnet_id = Column(Integer, ForeignKey("magnet_links.id"))
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    user = relationship("User", back_populates="favorites")
-    magnet = relationship("MagnetLink", back_populates="favorites")
 
 class UserSettings(Base):
     __tablename__ = "user_settings"
