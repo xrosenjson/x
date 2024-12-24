@@ -23,9 +23,13 @@ async def register(
 ) -> Any:
     """Register a new user"""
     # Check if user exists
-    existing_user = await db.query(User).filter(
-        (User.email == user_in.email) | (User.username == user_in.username)
-    ).first()
+    from sqlalchemy import select, or_
+    query = select(User).where(
+        or_(User.email == user_in.email, User.username == user_in.username)
+    )
+    result = await db.execute(query)
+    existing_user = result.scalar_one_or_none()
+    
     if existing_user:
         raise HTTPException(
             status_code=400,
@@ -53,9 +57,10 @@ async def login(
 ) -> Any:
     """Login user and return access token"""
     # Find user
-    user = await db.query(User).filter(
-        User.username == form_data.username
-    ).first()
+    from sqlalchemy import select
+    query = select(User).where(User.username == form_data.username)
+    result = await db.execute(query)
+    user = result.scalar_one_or_none()
     
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
