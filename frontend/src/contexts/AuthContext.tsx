@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../lib/api';
+import { api } from '../lib/api';
 import { User, LoginCredentials, RegisterCredentials, AuthResponse, UserSettings } from '../types/auth';
+
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+};
 
 interface UpdateProfileData {
   username?: string;
@@ -29,9 +34,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const token = localStorage.getItem('token');
     if (token) {
       api.get<User>('/api/v1/users/me')
-        .then(response => setUser(response.data))
-        .catch(() => localStorage.removeItem('token'))
-        .finally(() => setIsLoading(false));
+        .then((response: ApiResponse<User>) => {
+          setUser(response.data);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
