@@ -10,9 +10,10 @@ from app.core.rate_limit import rate_limit
 router = APIRouter()
 
 @router.post("/parse", response_model=MagnetLink)
+@rate_limit(max_requests=10, window_seconds=60)
 async def parse_link(
-    request: Request,
     magnet_data: MagnetLinkCreate,
+    request: Request = Depends(),
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ) -> MagnetLink:

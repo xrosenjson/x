@@ -44,31 +44,29 @@ class RateLimiter:
         self.request_history[client_id].append(time.time())
         return False
 
+from fastapi import Depends
+
+def get_request(request: Request = Depends()) -> Request:
+    return request
+
 def rate_limit(max_requests: int = 60, window_seconds: int = 60):
     """Rate limiting decorator"""
     limiter = RateLimiter(max_requests, window_seconds)
     
     def decorator(func: Callable):
         @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
-            # Get request from kwargs or find it in args
-            request = kwargs.get('request')
-            if not request and args:
-                for arg in args:
-                    if isinstance(arg, Request):
-                        request = arg
-                        break
-            
-            if not request:
-                raise ValueError("Request object not found in function arguments")
-            
+        async def wrapper(
+            request: Request = Depends(get_request),
+            *args,
+            **kwargs
+        ):
             try:
                 await limiter(request)
-                return await func(*args, **kwargs)
+                return await func(request=request, *args, **kwargs)
             except Exception as e:
                 # Log the error but allow the request to continue
                 print(f"Rate limiting error in decorator: {str(e)}")
-                return await func(*args, **kwargs)
+                return await func(request=request, *args, **kwargs)
         
         return wrapper
     
