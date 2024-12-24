@@ -2,7 +2,8 @@ export interface SyncMetadata {
   filename: string;
   size: number;
   timestamp: number;
-  type: 'download' | 'magnet' | 'admin';
+  type: 'download' | 'magnet';
+  isAdmin?: boolean;
 }
 
 export interface SyncChange {

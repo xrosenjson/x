@@ -12,7 +12,8 @@ interface OfflineData {
       filename: string;
       size: number;
       timestamp: number;
-      type: 'download' | 'magnet' | 'admin';
+      type: 'download' | 'magnet';
+      isAdmin?: boolean;
     };
   };
 }
@@ -52,7 +53,7 @@ class OfflineStorage {
     }
   }
 
-  async addDownload(id: string, data: ArrayBuffer, metadata: { filename: string; size: number; type: 'download' | 'magnet' }) {
+  async addDownload(id: string, data: ArrayBuffer, metadata: { filename: string; size: number; type: 'download' | 'magnet'; isAdmin?: boolean; timestamp?: number; }) {
     const currentSize = Object.values(this.data.metadata).reduce((acc, item) => acc + item.size, 0);
     const newSize = currentSize + metadata.size;
 

@@ -203,8 +203,32 @@ export const magnetApi = {
   },
 };
 
+// Cache management for admin API
+const requestCache = new Map<string, { promise: Promise<any>; timestamp: number; }>();
+const CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+
 // Admin API endpoints
 export const adminApi = {
+  // Cache management methods
+  getCachedRequest: async <T>(cacheKey: string): Promise<T | null> => {
+    const cached = requestCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TIME) {
+      return cached.promise;
+    }
+    return null;
+  },
+
+  setCachedRequest: <T>(cacheKey: string, promise: Promise<T>): void => {
+    requestCache.set(cacheKey, {
+      promise,
+      timestamp: Date.now()
+    });
+  },
+
+  clearCachedRequest: (cacheKey: string): void => {
+    requestCache.delete(cacheKey);
+  },
+
   getUsers: async (skip = 0, limit = 100): Promise<{
     users: Array<{
       id: number;
@@ -248,10 +272,15 @@ export const adminApi = {
         {
           filename: `${cacheKey}.json`,
           size: new TextEncoder().encode(JSON.stringify(response.data)).length,
-          type: 'admin',
+          type: 'magnet',
+          isAdmin: true,
           timestamp: Date.now()
         }
       );
+
+      // Cache in memory
+      const dataPromise = Promise.resolve(response.data);
+      adminApi.setCachedRequest(cacheKey, dataPromise);
 
       return response.data;
     } catch (error) {
@@ -315,10 +344,14 @@ export const adminApi = {
         {
           filename: `${cacheKey}.json`,
           size: new TextEncoder().encode(JSON.stringify(response.data)).length,
-          type: 'admin',
+          type: 'magnet',
+          isAdmin: true,
           timestamp: Date.now()
         }
       );
+
+      // Cache in memory
+      adminApi.setCachedRequest(cacheKey, Promise.resolve(response.data));
 
       return response.data;
     } catch (error) {
@@ -376,10 +409,14 @@ export const adminApi = {
         {
           filename: `${cacheKey}.json`,
           size: new TextEncoder().encode(JSON.stringify(response.data)).length,
-          type: 'admin',
+          type: 'magnet',
+          isAdmin: true,
           timestamp: Date.now()
         }
       );
+
+      // Cache in memory
+      adminApi.setCachedRequest(cacheKey, Promise.resolve(response.data));
 
       return response.data;
     } catch (error) {
