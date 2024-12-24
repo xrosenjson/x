@@ -4,6 +4,11 @@ export interface SyncMetadata {
   timestamp: number;
   type: 'download' | 'magnet';
   isAdmin?: boolean;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  lastSynced: string | null;
+  syncVersion: number;
+  localChanges?: any;
+  syncMetadata?: any;
 }
 
 export interface SyncChange {

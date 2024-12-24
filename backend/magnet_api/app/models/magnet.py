@@ -16,6 +16,12 @@ class MagnetLink(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     category = Column(String, nullable=True)
     magnet_metadata = Column(JSON, nullable=True)
+    
+    # Fields for offline sync
+    sync_status = Column(String, default="synced")  # synced, pending, conflict
+    last_synced = Column(DateTime(timezone=True), nullable=True)
+    sync_version = Column(Integer, default=1)  # For conflict resolution
+    local_changes = Column(JSON, nullable=True)  # Store local modifications
 
     # Relationships
     downloads = relationship("Download", back_populates="magnet")
@@ -32,7 +38,11 @@ class Download(Base):
     local_path = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    is_synced = Column(Boolean, default=False)  # For offline sync support
+    # Fields for offline sync
+    sync_status = Column(String, default="pending")  # synced, pending, conflict
+    last_synced = Column(DateTime(timezone=True), nullable=True)
+    sync_version = Column(Integer, default=1)  # For conflict resolution
+    sync_metadata = Column(JSON, nullable=True)  # Additional sync information
 
     user = relationship("User", back_populates="downloads")
     magnet = relationship("MagnetLink", back_populates="downloads")

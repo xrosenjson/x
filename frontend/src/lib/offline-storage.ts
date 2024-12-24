@@ -14,6 +14,11 @@ interface OfflineData {
       timestamp: number;
       type: 'download' | 'magnet';
       isAdmin?: boolean;
+      syncStatus: 'synced' | 'pending' | 'conflict';
+      lastSynced: string | null;
+      syncVersion: number;
+      localChanges?: any;
+      syncMetadata?: any;
     };
   };
 }
@@ -65,6 +70,11 @@ class OfflineStorage {
     this.data.metadata[id] = {
       ...metadata,
       timestamp: Date.now(),
+      syncStatus: 'pending',
+      lastSynced: null,
+      syncVersion: 1,
+      localChanges: null,
+      syncMetadata: null,
     };
 
     await this.saveData();

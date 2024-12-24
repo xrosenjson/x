@@ -2,7 +2,8 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
-from app.models.user import UserSettings, User, Download, MagnetLink
+from app.models.user import UserSettings, User
+from app.models.magnet import Download, MagnetLink
 from app.core.encryption import encryption
 from app.schemas.sync import Change, Metadata
 

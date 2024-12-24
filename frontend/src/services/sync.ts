@@ -5,6 +5,7 @@ import apiClient from '../lib/api-client';
 import { config } from '../lib/config';
 import { cacheManager } from '../lib/cache';
 import type { SyncState, SyncPullResponse, SyncChange } from '../types/sync';
+import type { SyncResolveResponse } from '../types/api';
 
 class SyncService {
   private static instance: SyncService;
@@ -160,6 +161,71 @@ class SyncService {
 
   public async forceSyncNow() {
     await this.sync();
+  }
+
+  public async resolveConflict(id: string, resolution: 'local' | 'remote') {
+    try {
+      const metadata = await offlineStorage.getMetadata(id);
+      if (!metadata) {
+        throw new Error('Item not found');
+      }
+
+      if (resolution === 'remote') {
+        // Fetch latest version from server
+        const response = await apiClient.get<SyncResolveResponse>(`/api/v1/sync/resolve/${id}`);
+        if (response.data) {
+          const { data: resolveData } = response;
+          const binaryData = new Uint8Array(atob(resolveData.data).split('').map(c => c.charCodeAt(0))).buffer;
+          await offlineStorage.addDownload(id, binaryData, {
+            filename: metadata.filename,
+            size: metadata.size,
+            type: metadata.type,
+            isAdmin: metadata.isAdmin,
+            timestamp: Date.now()
+          });
+        }
+      } else {
+        // Keep local version and mark as synced
+        await offlineStorage.addDownload(
+          id,
+          await offlineStorage.getDownload(id) as ArrayBuffer,
+          {
+            filename: metadata.filename,
+            size: metadata.size,
+            type: metadata.type,
+            isAdmin: metadata.isAdmin,
+            timestamp: Date.now()
+          }
+        );
+      }
+
+      // Notify server of resolution
+      await apiClient.post(`/api/v1/sync/resolve/${id}`, {
+        resolution,
+        deviceId: config.deviceId,
+      });
+
+    } catch (error) {
+      console.error('Failed to resolve conflict:', error);
+      throw error;
+    }
+  }
+
+  public async forceSyncAllUsers() {
+    if (!config.isAdmin) {
+      throw new Error('Unauthorized: Admin access required');
+    }
+
+    try {
+      await apiClient.post('/api/v1/admin/sync/all');
+      toast({
+        title: 'Global Sync Initiated',
+        description: 'Synchronization for all users has been initiated.',
+      });
+    } catch (error) {
+      console.error('Failed to sync all users:', error);
+      throw error;
+    }
   }
 
   public getState(): SyncState {
