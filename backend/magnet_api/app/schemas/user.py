@@ -64,3 +64,10 @@ class AdminUserStats(BaseModel):
     new_users_today: int
     new_users_this_week: int
     new_users_this_month: int
+
+
+class UserResponse(UserInDB):
+    """Response model for user data, excluding sensitive information"""
+    class Config:
+        from_attributes = True
+        exclude = {"password_hash"}
