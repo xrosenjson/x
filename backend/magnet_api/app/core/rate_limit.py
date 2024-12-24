@@ -50,14 +50,25 @@ def rate_limit(max_requests: int = 60, window_seconds: int = 60):
     
     def decorator(func: Callable):
         @functools.wraps(func)
-        async def wrapper(request: Request, *args, **kwargs):
+        async def wrapper(*args, **kwargs):
+            # Get request from kwargs or find it in args
+            request = kwargs.get('request')
+            if not request and args:
+                for arg in args:
+                    if isinstance(arg, Request):
+                        request = arg
+                        break
+            
+            if not request:
+                raise ValueError("Request object not found in function arguments")
+            
             try:
                 await limiter(request)
-                return await func(request, *args, **kwargs)
+                return await func(*args, **kwargs)
             except Exception as e:
                 # Log the error but allow the request to continue
                 print(f"Rate limiting error in decorator: {str(e)}")
-                return await func(request, *args, **kwargs)
+                return await func(*args, **kwargs)
         
         return wrapper
     
