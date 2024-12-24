@@ -12,8 +12,8 @@ router = APIRouter()
 @router.post("/parse", response_model=MagnetLink)
 @rate_limit(max_requests=10, window_seconds=60)
 async def parse_link(
-    magnet_data: MagnetLinkCreate,
     request: Request = Depends(),
+    magnet_data: MagnetLinkCreate = None,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ) -> MagnetLink:

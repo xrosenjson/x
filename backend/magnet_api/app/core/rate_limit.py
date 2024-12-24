@@ -47,6 +47,9 @@ class RateLimiter:
 from fastapi import Depends
 
 def get_request(request: Request = Depends()) -> Request:
+    """Get request from FastAPI dependency injection or state"""
+    if hasattr(request.state, '_rate_limit_request'):
+        return request.state._rate_limit_request
     return request
 
 def rate_limit(max_requests: int = 60, window_seconds: int = 60):
@@ -90,7 +93,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # Skip rate limiting for healthz endpoint
             if request.url.path == "/healthz":
                 return await call_next(request)
-                
+            
+            # Store request in state for rate limiting decorator
+            if not hasattr(request.state, '_rate_limit_request'):
+                request.state._rate_limit_request = request
+            
             # Apply rate limiting
             await self.minute_limiter(request)
             await self.hour_limiter(request)
@@ -101,5 +108,5 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             
         except Exception as e:
             # Log the error but allow the request to continue
-            print(f"Rate limiting error: {str(e)}")
+            print(f"Rate limiting error in middleware: {str(e)}")
             return await call_next(request)
