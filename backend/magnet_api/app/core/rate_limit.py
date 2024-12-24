@@ -50,24 +50,14 @@ def rate_limit(max_requests: int = 60, window_seconds: int = 60):
     
     def decorator(func: Callable):
         @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(request: Request, *args, **kwargs):
             try:
-                # Get request from FastAPI's dependency injection
-                request = kwargs.get('request')
-                if not request:
-                    for arg in args:
-                        if isinstance(arg, Request):
-                            request = arg
-                            break
-                
-                if request:
-                    await limiter(request)
-                
-                return await func(*args, **kwargs)
+                await limiter(request)
+                return await func(request, *args, **kwargs)
             except Exception as e:
                 # Log the error but allow the request to continue
                 print(f"Rate limiting error in decorator: {str(e)}")
-                return await func(*args, **kwargs)
+                return await func(request, *args, **kwargs)
         
         return wrapper
     
