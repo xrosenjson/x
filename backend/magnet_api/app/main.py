@@ -7,6 +7,10 @@ from app.models.base import Base, engine
 from app.core.rate_limit import RateLimiter
 from fastapi.responses import JSONResponse
 
+# Import all models to ensure they are registered with SQLAlchemy
+from app.models.user import User, Membership, UserSettings
+from app.models.magnet import MagnetLink, Download, Favorite
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
