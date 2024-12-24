@@ -1,8 +1,8 @@
-from fastapi import HTTPException, Request, FastAPI
+from fastapi import HTTPException, Request, FastAPI, Depends
 from starlette.middleware.base import BaseHTTPMiddleware
 from collections import defaultdict
 import time
-from typing import Dict, Tuple, Callable
+from typing import Dict, Tuple, Callable, Optional
 from datetime import datetime, timedelta
 import functools
 
@@ -33,7 +33,7 @@ class RateLimiter:
         
         return False, ""
 
-    async def __call__(self, request: Request) -> bool:
+    async def check_rate_limit(self, request: Request) -> None:
         """Check if request should be rate limited"""
         client_id = request.client.host
         is_limited, message = self._is_rate_limited(client_id)
@@ -42,38 +42,20 @@ class RateLimiter:
             raise HTTPException(status_code=429, detail=message)
         
         self.request_history[client_id].append(time.time())
-        return False
+        return None
 
-from fastapi import Depends
+def create_rate_limiter(max_requests: int = 60, window_seconds: int = 60):
+    """Create a rate limiter dependency"""
+    limiter = RateLimiter(max_requests, window_seconds)
 
-def get_request(request: Request = Depends()) -> Request:
-    """Get request from FastAPI dependency injection or state"""
-    if hasattr(request.state, '_rate_limit_request'):
-        return request.state._rate_limit_request
-    return request
+    async def check_rate_limit(request: Request = Depends()) -> None:
+        return await limiter.check_rate_limit(request)
+    
+    return check_rate_limit
 
 def rate_limit(max_requests: int = 60, window_seconds: int = 60):
-    """Rate limiting decorator"""
-    limiter = RateLimiter(max_requests, window_seconds)
-    
-    def decorator(func: Callable):
-        @functools.wraps(func)
-        async def wrapper(
-            request: Request = Depends(get_request),
-            *args,
-            **kwargs
-        ):
-            try:
-                await limiter(request)
-                return await func(request=request, *args, **kwargs)
-            except Exception as e:
-                # Log the error but allow the request to continue
-                print(f"Rate limiting error in decorator: {str(e)}")
-                return await func(request=request, *args, **kwargs)
-        
-        return wrapper
-    
-    return decorator
+    """Rate limiting decorator that uses FastAPI dependency injection"""
+    return Depends(create_rate_limiter(max_requests, window_seconds))
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Middleware for global rate limiting"""
@@ -94,13 +76,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if request.url.path == "/healthz":
                 return await call_next(request)
             
-            # Store request in state for rate limiting decorator
-            if not hasattr(request.state, '_rate_limit_request'):
-                request.state._rate_limit_request = request
-            
             # Apply rate limiting
-            await self.minute_limiter(request)
-            await self.hour_limiter(request)
+            await self.minute_limiter.check_rate_limit(request)
+            await self.hour_limiter.check_rate_limit(request)
             
             # Continue with request
             response = await call_next(request)
