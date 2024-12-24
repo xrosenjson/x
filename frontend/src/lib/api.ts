@@ -203,6 +203,202 @@ export const magnetApi = {
   },
 };
 
+// Admin API endpoints
+export const adminApi = {
+  getUsers: async (skip = 0, limit = 100): Promise<{
+    users: Array<{
+      id: number;
+      email: string;
+      is_active: boolean;
+      created_at: string;
+      last_login: string;
+    }>;
+    total: number;
+  }> => {
+    try {
+      // Try to get from offline storage first
+      const cacheKey = `admin_users_${skip}_${limit}`;
+      const offlineData = await offlineStorage.getMetadata(cacheKey);
+      
+      if (offlineData && Date.now() - offlineData.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+        const cachedData = await offlineStorage.getDownload(cacheKey);
+        if (cachedData) {
+          return JSON.parse(new TextDecoder().decode(cachedData));
+        }
+      }
+
+      // If not in cache or expired, fetch from API
+      const response = await api.get<{
+        users: Array<{
+          id: number;
+          email: string;
+          is_active: boolean;
+          created_at: string;
+          last_login: string;
+        }>;
+        total: number;
+      }>('/api/v1/admin/users', {
+        params: { skip, limit },
+      });
+
+      // Cache the response
+      await offlineStorage.addDownload(
+        cacheKey,
+        new TextEncoder().encode(JSON.stringify(response.data)).buffer,
+        {
+          filename: `${cacheKey}.json`,
+          size: new TextEncoder().encode(JSON.stringify(response.data)).length,
+          type: 'admin',
+          timestamp: Date.now()
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      if (!navigator.onLine) {
+        const cacheKey = `admin_users_${skip}_${limit}`;
+        const offlineData = await offlineStorage.getMetadata(cacheKey);
+        if (offlineData) {
+          const cachedData = await offlineStorage.getDownload(cacheKey);
+          if (cachedData) {
+            return JSON.parse(new TextDecoder().decode(cachedData));
+          }
+        }
+      }
+      throw error;
+    }
+  },
+
+  updateUser: async (userId: number, data: {
+    is_active?: boolean;
+    role?: string;
+  }): Promise<void> => {
+    try {
+      await api.patch(`/api/v1/admin/users/${userId}`, data);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  },
+
+  getUserStats: async (): Promise<{
+    total_users: number;
+    active_users: number;
+    downloads_today: number;
+    total_downloads: number;
+  }> => {
+    try {
+      // Try to get from offline storage first
+      const cacheKey = 'admin_stats';
+      const offlineData = await offlineStorage.getMetadata(cacheKey);
+      
+      if (offlineData && Date.now() - offlineData.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+        const cachedData = await offlineStorage.getDownload(cacheKey);
+        if (cachedData) {
+          return JSON.parse(new TextDecoder().decode(cachedData));
+        }
+      }
+
+      // If not in cache or expired, fetch from API
+      const response = await api.get<{
+        total_users: number;
+        active_users: number;
+        downloads_today: number;
+        total_downloads: number;
+      }>('/api/v1/admin/stats');
+
+      // Cache the response
+      await offlineStorage.addDownload(
+        cacheKey,
+        new TextEncoder().encode(JSON.stringify(response.data)).buffer,
+        {
+          filename: `${cacheKey}.json`,
+          size: new TextEncoder().encode(JSON.stringify(response.data)).length,
+          type: 'admin',
+          timestamp: Date.now()
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+      if (!navigator.onLine) {
+        const cacheKey = 'admin_stats';
+        const offlineData = await offlineStorage.getMetadata(cacheKey);
+        if (offlineData) {
+          const cachedData = await offlineStorage.getDownload(cacheKey);
+          if (cachedData) {
+            return JSON.parse(new TextDecoder().decode(cachedData));
+          }
+        }
+      }
+      throw error;
+    }
+  },
+
+  getUserActivity: async (userId: number): Promise<{
+    downloads: Array<{
+      id: number;
+      magnet_id: number;
+      created_at: string;
+      file_name: string;
+    }>;
+    total: number;
+  }> => {
+    try {
+      // Try to get from offline storage first
+      const cacheKey = `admin_user_activity_${userId}`;
+      const offlineData = await offlineStorage.getMetadata(cacheKey);
+      
+      if (offlineData && Date.now() - offlineData.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+        const cachedData = await offlineStorage.getDownload(cacheKey);
+        if (cachedData) {
+          return JSON.parse(new TextDecoder().decode(cachedData));
+        }
+      }
+
+      // If not in cache or expired, fetch from API
+      const response = await api.get<{
+        downloads: Array<{
+          id: number;
+          magnet_id: number;
+          created_at: string;
+          file_name: string;
+        }>;
+        total: number;
+      }>(`/api/v1/admin/users/${userId}/activity`);
+
+      // Cache the response
+      await offlineStorage.addDownload(
+        cacheKey,
+        new TextEncoder().encode(JSON.stringify(response.data)).buffer,
+        {
+          filename: `${cacheKey}.json`,
+          size: new TextEncoder().encode(JSON.stringify(response.data)).length,
+          type: 'admin',
+          timestamp: Date.now()
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user activity:', error);
+      if (!navigator.onLine) {
+        const cacheKey = `admin_user_activity_${userId}`;
+        const offlineData = await offlineStorage.getMetadata(cacheKey);
+        if (offlineData) {
+          const cachedData = await offlineStorage.getDownload(cacheKey);
+          if (cachedData) {
+            return JSON.parse(new TextDecoder().decode(cachedData));
+          }
+        }
+      }
+      throw error;
+    }
+  },
+};
+
 // Offline storage API endpoints
 export const offlineApi = {
   sync: async (): Promise<void> => {

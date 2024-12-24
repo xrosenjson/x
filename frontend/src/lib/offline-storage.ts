@@ -12,7 +12,7 @@ interface OfflineData {
       filename: string;
       size: number;
       timestamp: number;
-      type: 'download' | 'magnet';
+      type: 'download' | 'magnet' | 'admin';
     };
   };
 }
