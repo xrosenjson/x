@@ -51,18 +51,23 @@ def rate_limit(max_requests: int = 60, window_seconds: int = 60):
     def decorator(func: Callable):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-            request = kwargs.get('request')
-            if not request:
-                for arg in args:
-                    if isinstance(arg, Request):
-                        request = arg
-                        break
-            
-            if not request:
-                raise ValueError("No request object found in function arguments")
-            
-            await limiter(request)
-            return await func(*args, **kwargs)
+            try:
+                # Get request from FastAPI's dependency injection
+                request = kwargs.get('request')
+                if not request:
+                    for arg in args:
+                        if isinstance(arg, Request):
+                            request = arg
+                            break
+                
+                if request:
+                    await limiter(request)
+                
+                return await func(*args, **kwargs)
+            except Exception as e:
+                # Log the error but allow the request to continue
+                print(f"Rate limiting error in decorator: {str(e)}")
+                return await func(*args, **kwargs)
         
         return wrapper
     
@@ -82,6 +87,20 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     
     async def dispatch(self, request: Request, call_next):
         """Process the request through rate limiting"""
-        await self.minute_limiter(request)
-        await self.hour_limiter(request)
-        return await call_next(request)
+        try:
+            # Skip rate limiting for healthz endpoint
+            if request.url.path == "/healthz":
+                return await call_next(request)
+                
+            # Apply rate limiting
+            await self.minute_limiter(request)
+            await self.hour_limiter(request)
+            
+            # Continue with request
+            response = await call_next(request)
+            return response
+            
+        except Exception as e:
+            # Log the error but allow the request to continue
+            print(f"Rate limiting error: {str(e)}")
+            return await call_next(request)

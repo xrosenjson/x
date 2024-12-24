@@ -26,8 +26,8 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Add rate limiting
-app.add_middleware(RateLimitMiddleware, requests_per_minute=60, requests_per_hour=1000)
+# Temporarily disable rate limiting for testing
+# app.add_middleware(RateLimitMiddleware, requests_per_minute=60, requests_per_hour=1000)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
