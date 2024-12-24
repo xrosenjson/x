@@ -5,7 +5,8 @@ from typing import List, Dict, Any
 import os
 from datetime import datetime, timedelta
 from app.models.base import get_db
-from app.models.user import User, MagnetLink, Download
+from app.models.user import User
+from app.models.magnet import MagnetLink, Download
 from app.core.tasks import DownloadManager, OfflineManager
 from app.api.deps import get_current_active_user
 

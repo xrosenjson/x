@@ -5,7 +5,7 @@ import aiofiles
 import os
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.user import Download, MagnetLink
+from app.models.magnet import Download, MagnetLink
 from app.core.config import settings
 
 class DownloadManager:
