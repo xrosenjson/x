@@ -4,7 +4,7 @@ from app.api.v1.endpoints import admin, magnet, sync, offline
 from app.api.v1.endpoints.auth import router as auth_router
 from app.core.config import settings
 from app.models.base import Base, engine
-from app.core.rate_limit import RateLimiter
+from app.core.rate_limit import RateLimitMiddleware
 from fastapi.responses import JSONResponse
 
 # Import all models to ensure they are registered with SQLAlchemy
@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 # Add rate limiting
-app.add_middleware(RateLimiter, requests_per_minute=60, requests_per_hour=1000)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=60, requests_per_hour=1000)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
