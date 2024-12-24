@@ -175,6 +175,9 @@ class SyncService {
         const response = await apiClient.get<SyncResolveResponse>(`/api/v1/sync/resolve/${id}`);
         if (response.data) {
           const { data: resolveData } = response;
+          if (typeof resolveData.data !== 'string') {
+            throw new Error('Invalid data format received from server');
+          }
           const binaryData = new Uint8Array(atob(resolveData.data).split('').map(c => c.charCodeAt(0))).buffer;
           await offlineStorage.addDownload(id, binaryData, {
             filename: metadata.filename,

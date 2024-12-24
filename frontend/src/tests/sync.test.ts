@@ -41,7 +41,10 @@ describe('Sync Integration Tests', () => {
       filename: 'test.mp4',
       size: 1024,
       timestamp: Date.now(),
-      type: 'download'
+      type: 'download',
+      syncStatus: 'synced',
+      lastSynced: new Date().toISOString(),
+      syncVersion: 1
     };
     const testData = new ArrayBuffer(1024);
     await offlineStorage.addDownload('test-id', testData, testMetadata);
@@ -81,7 +84,10 @@ describe('Sync Integration Tests', () => {
       filename: 'offline.mp4',
       size: 2048,
       timestamp: Date.now(),
-      type: 'download'
+      type: 'download',
+      syncStatus: 'synced',
+      lastSynced: new Date().toISOString(),
+      syncVersion: 1
     };
     const testData = new ArrayBuffer(2048);
     await offlineStorage.addDownload('offline-id', testData, testMetadata);

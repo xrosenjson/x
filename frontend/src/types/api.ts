@@ -12,11 +12,28 @@ export interface SyncResolveData {
     type: 'download' | 'magnet';
     isAdmin?: boolean;
     timestamp?: number;
+    syncStatus: 'synced' | 'pending' | 'conflict';
+    lastSynced: string | null;
+    syncVersion: number;
   };
 }
 
 export interface SyncResolveResponse {
-  data: SyncResolveData;
+  data: {
+    data: string;
+    metadata: {
+      filename: string;
+      size: number;
+      type: 'download' | 'magnet';
+      isAdmin?: boolean;
+      timestamp?: number;
+      syncStatus: 'synced' | 'pending' | 'conflict';
+      lastSynced: string | null;
+      syncVersion: number;
+    };
+  };
+  message?: string;
+  error?: string;
 }
 
 export interface AdminSyncResponse {
