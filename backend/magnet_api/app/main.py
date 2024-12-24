@@ -49,9 +49,18 @@ app.include_router(offline.router, prefix=f"{settings.API_V1_STR}/offline", tags
 
 @app.on_event("startup")
 async def startup():
-    # Create database tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Initialize database and create tables on startup"""
+    try:
+        print("Starting database initialization...")
+        async with engine.begin() as conn:
+            print("Creating database tables...")
+            await conn.run_sync(Base.metadata.create_all)
+            print("Database tables created successfully")
+    except Exception as e:
+        print(f"Error during database initialization: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise  # Re-raise the exception to prevent startup if DB init fails
 
 @app.get("/healthz")
 async def healthz():
