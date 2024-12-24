@@ -1,9 +1,9 @@
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Button } from '../ui/button';
 import { toast } from '../../lib/use-toast';
+import { useState } from 'react';
 
 interface Settings {
   theme: 'light' | 'dark' | 'system';
@@ -13,8 +13,8 @@ interface Settings {
   syncEnabled: boolean;
 }
 
-const SettingsPage = () => {
-  const [settings, setSettings] = React.useState<Settings>({
+export default function SettingsPage() {
+  const [settings, setSettings] = useState<Settings>({
     theme: 'system',
     autoDownload: false,
     streamingQuality: 'auto',
@@ -38,7 +38,7 @@ const SettingsPage = () => {
     }
   };
 
-export default SettingsPage;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card>

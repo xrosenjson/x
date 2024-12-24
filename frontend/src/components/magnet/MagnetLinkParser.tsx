@@ -15,7 +15,7 @@ export const MagnetLinkParser: React.FC<MagnetLinkParserProps> = ({ onParsed }) 
   const [magnetUrl, setMagnetUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user: _ } = useAuth(); // Unused for now
 
   const handleParse = async () => {
     if (!magnetUrl) {

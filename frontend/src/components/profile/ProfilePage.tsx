@@ -1,15 +1,15 @@
-import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Input } from '../ui/input';
 import { toast } from '../../lib/use-toast';
+import { useState } from 'react';
 
-const ProfilePage = () => {
+export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [formData, setFormData] = React.useState({
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
     username: user?.username || '',
     email: user?.email || '',
     avatar: user?.avatar || '',
@@ -33,7 +33,7 @@ const ProfilePage = () => {
     }
   };
 
-export default ProfilePage;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card>

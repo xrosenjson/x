@@ -12,9 +12,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   adminOnly = false 
 }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <Loading size="large" message="Loading..." />;
   }
 

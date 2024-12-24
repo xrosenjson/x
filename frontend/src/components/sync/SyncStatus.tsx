@@ -12,7 +12,7 @@ interface SyncStatusProps {
 
 export const SyncStatus: React.FC<SyncStatusProps> = ({ isAdmin }) => {
   const [state, setState] = useState(() => syncService.getState());
-  const [syncStatus, setSyncStatus] = useState<SyncMetadata['syncStatus']>('synced');
+  const [syncStatus] = useState<SyncMetadata['syncStatus']>('synced');
   const [conflicts, setConflicts] = useState<Array<{ id: string; type: string }>>([]);
 
   useEffect(() => {

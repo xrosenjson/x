@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +28,7 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-const RegisterForm: React.FC = () => {
+export default function RegisterForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const form = useForm<RegisterFormValues>({
@@ -60,7 +59,7 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-export default RegisterForm;
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>

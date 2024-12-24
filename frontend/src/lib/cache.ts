@@ -71,7 +71,7 @@ class CacheManager {
     let currentSize = 0;
     const entries: [string, CacheEntry<unknown>][] = [];
 
-    await this.cache.iterate<CacheEntry<unknown>, void>((entry, key) => {
+    await this.cache.iterate((entry: CacheEntry<unknown>, key: string) => {
       currentSize += entry.size;
       entries.push([key, entry]);
     });

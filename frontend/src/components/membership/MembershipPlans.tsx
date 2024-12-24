@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -56,7 +55,7 @@ const plans = [
   },
 ];
 
-const MembershipPlans: React.FC = () => {
+export default function MembershipPlans() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -77,7 +76,7 @@ const MembershipPlans: React.FC = () => {
     }
   };
 
-export default MembershipPlans;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-10">
