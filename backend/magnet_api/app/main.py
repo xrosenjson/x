@@ -28,11 +28,15 @@ app.add_middleware(RateLimiter, requests_per_minute=60, requests_per_hour=1000)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler for proper error handling"""
+    import traceback
+    error_details = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    print(f"Error details: {error_details}")  # Log the full error
     return JSONResponse(
         status_code=500,
         content={
-            "detail": "Internal server error",
-            "path": request.url.path
+            "detail": str(exc),
+            "path": request.url.path,
+            "traceback": error_details
         }
     )
 
